@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Based Image Classification Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Load custom fonts for modern premium look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI-Based Image Classification Tool</h1>
+            <p class="subtitle">Upload an image to automatically detect objects using computer vision and generate a description.</p>
+        </header>
+
+        <main class="main-card">
+            <div class="upload-section" id="upload-section">
+                <input type="file" id="image-input" accept="image/*" hidden>
+                <button id="upload-btn" class="primary-btn">Select an Image</button>
+                <div id="preview-container" class="preview-container hidden">
+                    <img id="image-preview" src="" alt="Image Preview">
+                    <button id="analyze-btn" class="action-btn">Analyze Image</button>
+                </div>
+            </div>
+
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Detecting objects with YOLO...</p>
+            </div>
+
+            <div id="result-section" class="result-section hidden">
+                <h2>Analysis Result</h2>
+                <div class="result-card">
+                    <div class="result-item">
+                        <span class="label">Prediction:</span>
+                        <span id="pred-value" class="value highlight">Group Photo</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Description:</span>
+                        <span id="desc-value" class="value">This image contains multiple people standing together in front of a building.</span>
+                    </div>
+                    
+                    <hr class="divider">
+                    
+                    <div class="result-item">
+                        <span class="label">Detected Objects:</span>
+                        <span id="obj-value" class="value">person (25), building (1)</span>
+                    </div>
+                </div>
+                <button id="reset-btn" class="secondary-btn">Try Another Image</button>
+            </div>
+            
+            <div id="error-message" class="error-message hidden">
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
