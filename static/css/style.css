@@ -137,9 +137,11 @@ body {
     font-size: 36px;
     font-weight: 700;
     margin-bottom: 12px;
-    background: -webkit-linear-gradient(0deg, #f8fafc, #94a3b8);
+    background: -webkit-linear-gradient(0deg, #6bb8ff, #b17aff);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
 }
 .subtitle {
     color: var(--text-muted);
