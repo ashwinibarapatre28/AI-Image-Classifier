@@ -3,60 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Based Image Classification Tool</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <!-- Load custom fonts for modern premium look -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>VisionAI Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>AI-Based Image Classification Tool</h1>
-            <p class="subtitle">Upload an image to automatically detect objects using computer vision and generate a description.</p>
-        </header>
-
-        <main class="main-card">
-            <div class="upload-section" id="upload-section">
-                <input type="file" id="image-input" accept="image/*" hidden>
-                <button id="upload-btn" class="primary-btn">Select an Image</button>
-                <div id="preview-container" class="preview-container hidden">
-                    <img id="image-preview" src="" alt="Image Preview">
-                    <button id="analyze-btn" class="action-btn">Analyze Image</button>
-                </div>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <i class="fa-solid fa-brain"></i>
+                <h2>VisionAI</h2>
             </div>
-
-            <div id="loading" class="loading hidden">
-                <div class="spinner"></div>
-                <p>Detecting objects with YOLO...</p>
+            <nav class="nav-menu">
+                <a href="#" class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="#"><i class="fa-solid fa-history"></i> History</a>
+                <a href="#"><i class="fa-solid fa-cog"></i> Settings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <p>AI Engine v2.4 (YOLOv8)</p>
             </div>
+        </aside>
 
-            <div id="result-section" class="result-section hidden">
-                <h2>Analysis Result</h2>
-                <div class="result-card">
-                    <div class="result-item">
-                        <span class="label">Prediction:</span>
-                        <span id="pred-value" class="value highlight">Group Photo</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="label">Description:</span>
-                        <span id="desc-value" class="value">This image contains multiple people standing together in front of a building.</span>
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1>Image Analysis Dashboard</h1>
+                <p class="subtitle">Upload an image to extract actionable insights instantly using our advanced AI models.</p>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Upload Area (Left) -->
+                <div class="upload-section glass-panel">
+                    <div class="upload-zone" id="upload-zone">
+                        <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                        <h3>Drag & Drop your image here</h3>
+                        <p>or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*" hidden>
                     </div>
                     
-                    <hr class="divider">
+                    <div class="preview-container hidden" id="preview-container">
+                        <img id="image-preview" src="" alt="Preview">
+                        <button id="reset-btn" class="secondary-btn"><i class="fa-solid fa-rotate-right"></i> Analyze Another Image</button>
+                    </div>
                     
-                    <div class="result-item">
-                        <span class="label">Detected Objects:</span>
-                        <span id="obj-value" class="value">person (25), building (1)</span>
+                    <div class="loader-container hidden" id="loader">
+                        <div class="spinner"></div>
+                        <p>AI is analyzing the image...</p>
                     </div>
                 </div>
-                <button id="reset-btn" class="secondary-btn">Try Another Image</button>
-            </div>
-            
-            <div id="error-message" class="error-message hidden">
+
+                <!-- Results Area (Right) -->
+                <div class="results-section hidden" id="results-section">
+                    <!-- Key Metrics Cards -->
+                    <div class="metrics-grid">
+                        <div class="metric-card glass-panel">
+                            <i class="fa-solid fa-tag metric-icon purple"></i>
+                            <div class="metric-info">
+                                <span class="label">Prediction</span>
+                                <h3 id="res-prediction">--</h3>
+                            </div>
+                        </div>
+                        <div class="metric-card glass-panel">
+                            <i class="fa-solid fa-bullseye metric-icon blue"></i>
+                            <div class="metric-info">
+                                <span class="label">Accuracy</span>
+                                <h3 id="res-accuracy">--%</h3>
+                            </div>
+                        </div>
+                        <div class="metric-card glass-panel">
+                            <i class="fa-solid fa-wand-magic-sparkles metric-icon green"></i>
+                            <div class="metric-info">
+                                <span class="label">Image Quality</span>
+                                <h3 id="res-quality">--</h3>
+                            </div>
+                        </div>
+                        <div class="metric-card glass-panel">
+                            <i class="fa-solid fa-image metric-icon orange"></i>
+                            <div class="metric-info">
+                                <span class="label">Background</span>
+                                <h3 id="res-background">--</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Info -->
+                    <div class="details-panel glass-panel mt-20">
+                        <div class="detail-header">
+                            <h3><i class="fa-solid fa-list-check"></i> Analysis Details</h3>
+                            <span id="res-authenticity" class="badge">--</span>
+                        </div>
+                        
+                        <div class="detail-row">
+                            <span class="detail-label">Description</span>
+                            <p id="res-description" class="detail-value">--</p>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Detected Objects</span>
+                            <p id="res-objects" class="detail-value">--</p>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Sharpness Score</span>
+                            <p id="res-sharpness" class="detail-value">--</p>
+                        </div>
+                        
+                        <!-- Gender Table (hidden by default) -->
+                        <div class="gender-section hidden mt-20" id="gender-section">
+                            <h4><i class="fa-solid fa-users"></i> Demographic Estimation</h4>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Demographic</th>
+                                        <th>Estimated Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><i class="fa-solid fa-mars" style="color:#3b82f6;"></i> Male</td>
+                                        <td id="res-male-count">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fa-solid fa-venus" style="color:#ec4899;"></i> Female</td>
+                                        <td id="res-female-count">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
-
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

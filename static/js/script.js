@@ -1,97 +1,161 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const fileInput = document.getElementById('image-input');
-    const dropZone = document.getElementById('drop-zone');
+    const uploadZone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('file-input');
     const previewContainer = document.getElementById('preview-container');
     const imagePreview = document.getElementById('image-preview');
-    const classifyBtn = document.getElementById('classify-btn');
-    const resultSection = document.getElementById('result-section');
-    const resultText = document.getElementById('result-text');
+    const resetBtn = document.getElementById('reset-btn');
+    const loader = document.getElementById('loader');
+    const resultsSection = document.getElementById('results-section');
 
-    let selectedFile = null;
-
-    // Handle file selection
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleFile(e.target.files[0]);
-        }
+    // Drag and drop events
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, preventDefaults, false);
     });
 
-    // Drag and drop functionality
-    dropZone.addEventListener('dragover', (e) => {
+    function preventDefaults(e) {
         e.preventDefault();
-        dropZone.classList.add('dragover');
-    });
-
-    dropZone.addEventListener('dragleave', () => {
-        dropZone.classList.remove('dragover');
-    });
-
-    dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('dragover');
-        if (e.dataTransfer.files.length > 0) {
-            handleFile(e.dataTransfer.files[0]);
-        }
-    });
-
-    function handleFile(file) {
-        if (!file.type.startsWith('image/')) {
-            alert('Please select a valid image file.');
-            return;
-        }
-
-        selectedFile = file;
-        
-        // Setup image preview
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            imagePreview.src = e.target.result;
-            previewContainer.style.display = 'block';
-            classifyBtn.disabled = false;
-            
-            // Hide previous results
-            resultSection.style.display = 'none';
-        };
-        reader.readAsDataURL(file);
+        e.stopPropagation();
     }
 
-    // Classify button click
-    classifyBtn.addEventListener('click', async () => {
-        if (!selectedFile) return;
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, () => {
+            uploadZone.classList.add('dragover');
+        }, false);
+    });
 
-        // Show loading state
-        classifyBtn.classList.add('loading');
-        classifyBtn.disabled = true;
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, () => {
+            uploadZone.classList.remove('dragover');
+        }, false);
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+        let dt = e.dataTransfer;
+        let files = dt.files;
+        handleFiles(files);
+    });
+
+    uploadZone.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function() {
+        handleFiles(this.files);
+    });
+
+    resetBtn.addEventListener('click', () => {
+        resetApp();
+    });
+
+    function handleFiles(files) {
+        if (files.length > 0) {
+            const file = files[0];
+            if (file.type.startsWith('image/')) {
+                // Show preview
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    uploadZone.classList.add('hidden');
+                    previewContainer.classList.remove('hidden');
+                    
+                    // Analyze
+                    analyzeImage(file);
+                }
+            } else {
+                alert("Please upload an image file.");
+            }
+        }
+    }
+
+    async function analyzeImage(file) {
+        // Show loader, hide old results
+        loader.classList.remove('hidden');
+        resultsSection.classList.add('hidden');
+        previewContainer.style.opacity = '0.5';
 
         const formData = new FormData();
-        formData.append('image', selectedFile);
+        formData.append('image', file);
 
         try {
-            const response = await fetch('/classify', {
+            const response = await fetch('/analyze', {
                 method: 'POST',
                 body: formData
             });
 
             const data = await response.json();
 
-            // Display results
-            resultSection.className = 'result-section'; // Reset classes
-            if (response.ok) {
-                resultText.textContent = data.result;
-            } else {
-                resultSection.classList.add('error');
-                resultText.textContent = data.error || 'An error occurred';
+            if (data.error) {
+                alert("Error: " + data.error);
+                resetApp();
+                return;
             }
-            resultSection.style.display = 'block';
+
+            // Populate UI
+            updateUI(data);
 
         } catch (error) {
-            resultSection.className = 'result-section error';
-            resultText.textContent = 'Failed to connect to the server.';
-            resultSection.style.display = 'block';
+            console.error(error);
+            alert("An error occurred during analysis.");
+            resetApp();
         } finally {
-            // Remove loading state
-            classifyBtn.classList.remove('loading');
-            classifyBtn.disabled = false;
+            loader.classList.add('hidden');
+            previewContainer.style.opacity = '1';
         }
-    });
+    }
+
+    function updateUI(data) {
+        document.getElementById('res-prediction').textContent = data.prediction || '--';
+        document.getElementById('res-accuracy').textContent = data.accuracy !== undefined ? data.accuracy + '%' : '--%';
+        document.getElementById('res-quality').textContent = data.quality !== undefined ? data.quality : '--';
+        document.getElementById('res-background').textContent = data.background || '--';
+        
+        document.getElementById('res-authenticity').textContent = data.authenticity || '--';
+        
+        // Dynamic badge color
+        const badge = document.getElementById('res-authenticity');
+        if (data.authenticity === 'Real Image') {
+            badge.style.background = 'rgba(16, 185, 129, 0.15)';
+            badge.style.color = 'var(--green)';
+            badge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+        } else if (data.authenticity === 'AI Generated') {
+            badge.style.background = 'rgba(59, 130, 246, 0.15)';
+            badge.style.color = 'var(--blue)';
+            badge.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+        } else {
+            badge.style.background = 'rgba(168, 85, 247, 0.15)';
+            badge.style.color = 'var(--purple)';
+            badge.style.borderColor = 'rgba(168, 85, 247, 0.3)';
+        }
+
+        document.getElementById('res-description').textContent = data.description || '--';
+        document.getElementById('res-objects').textContent = data.detected_objects || '--';
+        document.getElementById('res-sharpness').textContent = data.sharpness !== undefined ? data.sharpness : '--';
+
+        const genderSection = document.getElementById('gender-section');
+        if (data.gender) {
+            genderSection.classList.remove('hidden');
+            document.getElementById('res-male-count').textContent = data.gender.male;
+            document.getElementById('res-female-count').textContent = data.gender.female;
+        } else {
+            genderSection.classList.add('hidden');
+        }
+
+        // Show results with fade in
+        resultsSection.classList.remove('hidden');
+        resultsSection.classList.add('fade-in');
+        
+        // Remove animation class after it completes so it can apply again next time
+        setTimeout(() => {
+            resultsSection.classList.remove('fade-in');
+        }, 500);
+    }
+
+    function resetApp() {
+        uploadZone.classList.remove('hidden');
+        previewContainer.classList.add('hidden');
+        resultsSection.classList.add('hidden');
+        loader.classList.add('hidden');
+        fileInput.value = '';
+    }
 });
