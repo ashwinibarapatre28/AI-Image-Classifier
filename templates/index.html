@@ -17,9 +17,9 @@
                 <h2>VisionAI</h2>
             </div>
             <nav class="nav-menu">
-                <a href="#" class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-                <a href="#"><i class="fa-solid fa-history"></i> History</a>
-                <a href="#"><i class="fa-solid fa-cog"></i> Settings</a>
+                <a href="#" class="nav-btn active" data-target="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="#" class="nav-btn" data-target="history"><i class="fa-solid fa-history"></i> History</a>
+                <a href="#" class="nav-btn" data-target="settings"><i class="fa-solid fa-cog"></i> Settings</a>
             </nav>
             <div class="sidebar-footer">
                 <p>AI Engine v2.4 (YOLOv8)</p>
@@ -30,10 +30,11 @@
         <main class="main-content">
             <header class="top-header">
                 <h1>AI-Based Image Classification Tool</h1>
-                <p class="subtitle">Upload an image to extract actionable insights instantly using our advanced AI models.</p>
+                <p class="subtitle" id="view-subtitle">Upload an image to extract actionable insights instantly using our advanced AI models.</p>
             </header>
 
-            <div class="dashboard-grid">
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="dashboard-grid view-section">
                 <!-- Upload Area (Left) -->
                 <div class="upload-section glass-card">
                     <div class="upload-zone" id="upload-zone">
@@ -139,6 +140,60 @@
                     </div>
                 </div>
             </div>
+
+            <!-- History View -->
+            <div id="view-history" class="view-section hidden">
+                <div class="history-grid" id="history-container">
+                    <!-- Javascript will populate history cards here -->
+                </div>
+                <div id="no-history-msg" class="empty-state text-center mt-20">
+                    <i class="fa-solid fa-folder-open" style="font-size: 48px; color: var(--text-muted); margin-bottom: 16px;"></i>
+                    <h3 style="color: var(--text-main);">No History Yet</h3>
+                    <p class="subtitle" style="margin-top: 8px;">Run an analysis from the dashboard and your results will appear here.</p>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div id="view-settings" class="view-section hidden">
+                <div class="glass-card settings-card" style="max-width: 800px;">
+                    <h3><i class="fa-solid fa-database"></i> Data Management</h3>
+                    <p style="color: var(--text-muted); margin-top: 5px; margin-bottom: 20px;">Manage locally stored app data and preferences here. All data resides solely in your browser storage.</p>
+                    
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <h4>Clear Analysis History</h4>
+                            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Permanently delete previously stored classification results.</p>
+                        </div>
+                        <button id="btn-clear-history" class="secondary-btn" style="color: #ef4444; border-color: #ef4444; width: auto;"><i class="fa-solid fa-trash"></i> Delete Data</button>
+                    </div>
+
+                    <hr class="divider">
+
+                    <h3><i class="fa-solid fa-palette"></i> Appearance Settings</h3>
+                    <div class="setting-row" style="margin-top: 15px;">
+                        <div class="setting-info">
+                            <h4>Light Theme</h4>
+                            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Switch from the default dark visuals to a brighter design.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="theme-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <h4>UI Animations</h4>
+                            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Enable or disable modern transition and hover effects.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="animation-toggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
     
