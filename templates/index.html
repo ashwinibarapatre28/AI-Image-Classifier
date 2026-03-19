@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VisionAI Dashboard</title>
+    <title>AI-Based Image Classification Tool</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,13 +29,13 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="top-header">
-                <h1>Image Analysis Dashboard</h1>
+                <h1>AI-Based Image Classification Tool</h1>
                 <p class="subtitle">Upload an image to extract actionable insights instantly using our advanced AI models.</p>
             </header>
 
             <div class="dashboard-grid">
                 <!-- Upload Area (Left) -->
-                <div class="upload-section glass-panel">
+                <div class="upload-section glass-card">
                     <div class="upload-zone" id="upload-zone">
                         <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
                         <h3>Drag & Drop your image here</h3>
@@ -45,7 +45,7 @@
                     
                     <div class="preview-container hidden" id="preview-container">
                         <img id="image-preview" src="" alt="Preview">
-                        <button id="reset-btn" class="secondary-btn"><i class="fa-solid fa-rotate-right"></i> Analyze Another Image</button>
+                        <button id="reset-btn" class="gradient-btn"><i class="fa-solid fa-rotate-right"></i> Try Another Image</button>
                     </div>
                     
                     <div class="loader-container hidden" id="loader">
@@ -56,79 +56,85 @@
 
                 <!-- Results Area (Right) -->
                 <div class="results-section hidden" id="results-section">
-                    <!-- Key Metrics Cards -->
-                    <div class="metrics-grid">
-                        <div class="metric-card glass-panel">
-                            <i class="fa-solid fa-tag metric-icon purple"></i>
-                            <div class="metric-info">
-                                <span class="label">Prediction</span>
-                                <h3 id="res-prediction">--</h3>
-                            </div>
-                        </div>
-                        <div class="metric-card glass-panel">
-                            <i class="fa-solid fa-bullseye metric-icon blue"></i>
-                            <div class="metric-info">
-                                <span class="label">Accuracy</span>
-                                <h3 id="res-accuracy">--%</h3>
-                            </div>
-                        </div>
-                        <div class="metric-card glass-panel">
-                            <i class="fa-solid fa-wand-magic-sparkles metric-icon green"></i>
-                            <div class="metric-info">
-                                <span class="label">Image Quality</span>
-                                <h3 id="res-quality">--</h3>
-                            </div>
-                        </div>
-                        <div class="metric-card glass-panel">
-                            <i class="fa-solid fa-image metric-icon orange"></i>
-                            <div class="metric-info">
-                                <span class="label">Background</span>
-                                <h3 id="res-background">--</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Detailed Info -->
-                    <div class="details-panel glass-panel mt-20">
+                    <div class="glass-card analysis-result-card">
                         <div class="detail-header">
-                            <h3><i class="fa-solid fa-list-check"></i> Analysis Details</h3>
+                            <h3><i class="fa-solid fa-chart-pie"></i> Analysis Result</h3>
                             <span id="res-authenticity" class="badge">--</span>
                         </div>
                         
-                        <div class="detail-row">
-                            <span class="detail-label">Description</span>
-                            <p id="res-description" class="detail-value">--</p>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Detected Objects</span>
-                            <p id="res-objects" class="detail-value">--</p>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Sharpness Score</span>
-                            <p id="res-sharpness" class="detail-value">--</p>
-                        </div>
+                        <hr class="divider">
                         
-                        <!-- Gender Table (hidden by default) -->
-                        <div class="gender-section hidden mt-20" id="gender-section">
-                            <h4><i class="fa-solid fa-users"></i> Demographic Estimation</h4>
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Demographic</th>
-                                        <th>Estimated Count</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><i class="fa-solid fa-mars" style="color:#3b82f6;"></i> Male</td>
-                                        <td id="res-male-count">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td><i class="fa-solid fa-venus" style="color:#ec4899;"></i> Female</td>
-                                        <td id="res-female-count">0</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <!-- Key Metrics Cards -->
+                        <div class="metrics-grid">
+                            <div class="metric-item">
+                                <i class="fa-solid fa-tag metric-icon purple"></i>
+                                <div class="metric-info">
+                                    <span class="label">Prediction</span>
+                                    <h3 id="res-prediction">--</h3>
+                                </div>
+                            </div>
+                            <div class="metric-item">
+                                <i class="fa-solid fa-bullseye metric-icon blue"></i>
+                                <div class="metric-info">
+                                    <span class="label">Accuracy</span>
+                                    <h3 id="res-accuracy">--%</h3>
+                                </div>
+                            </div>
+                            <div class="metric-item">
+                                <i class="fa-solid fa-wand-magic-sparkles metric-icon green"></i>
+                                <div class="metric-info">
+                                    <span class="label">Image Quality</span>
+                                    <h3 id="res-quality">--</h3>
+                                </div>
+                            </div>
+                            <div class="metric-item">
+                                <i class="fa-solid fa-image metric-icon orange"></i>
+                                <div class="metric-info">
+                                    <span class="label">Background</span>
+                                    <h3 id="res-background">--</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <!-- Detailed Info -->
+                        <div class="details-panel mt-20">
+                            <div class="detail-row">
+                                <span class="detail-label">Description</span>
+                                <p id="res-description" class="detail-value">--</p>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Detected Objects</span>
+                                <p id="res-objects" class="detail-value">--</p>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Sharpness Score</span>
+                                <p id="res-sharpness" class="detail-value">--</p>
+                            </div>
+                            
+                            <!-- Gender Table (hidden by default) -->
+                            <div class="gender-section hidden mt-20" id="gender-section">
+                                <h4><i class="fa-solid fa-users"></i> Demographic Estimation</h4>
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Demographic</th>
+                                            <th>Estimated Count</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><i class="fa-solid fa-mars" style="color:#3b82f6;"></i> Male</td>
+                                            <td id="res-male-count">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td><i class="fa-solid fa-venus" style="color:#ec4899;"></i> Female</td>
+                                            <td id="res-female-count">0</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
