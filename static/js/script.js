@@ -37,6 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update Header Subtitle
             if(target === 'dashboard') {
                 viewSubtitle.textContent = "Upload an image to extract actionable insights instantly using our advanced AI models.";
+            } else if(target === 'analytics') {
+                viewSubtitle.textContent = "Gain comprehensive insights from your historical classification metrics.";
+                renderAnalytics();
             } else if(target === 'history') {
                 viewSubtitle.textContent = "Review your highly detailed past image classification inferences.";
                 renderHistory();
@@ -225,8 +228,112 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!document.getElementById('view-history').classList.contains('hidden')) {
                 renderHistory();
             }
+            if (!document.getElementById('view-analytics').classList.contains('hidden')) {
+                renderAnalytics();
+            }
         }
     });
+
+    // -- Analytics Chart Logic --
+    let analyticsChartInstance = null;
+    
+    function renderAnalytics() {
+        // Calculate stats
+        const total = currentHistory.length;
+        document.getElementById('stat-total').textContent = total;
+        
+        let avgAccuracy = 0;
+        let realCount = 0;
+        const classCounts = {};
+        
+        if (total > 0) {
+            const sumAcc = currentHistory.reduce((acc, item) => acc + parseFloat(item.accuracy), 0);
+            avgAccuracy = (sumAcc / total).toFixed(1);
+            
+            realCount = currentHistory.filter(item => item.authenticity === 'Real Image').length;
+            
+            currentHistory.forEach(item => {
+                const pred = item.prediction;
+                if (!classCounts[pred]) classCounts[pred] = 0;
+                classCounts[pred]++;
+            });
+        }
+        
+        document.getElementById('stat-accuracy').textContent = avgAccuracy + '%';
+        document.getElementById('stat-real').textContent = realCount;
+        
+        // Render Chart
+        const ctx = document.getElementById('predictionsChart').getContext('2d');
+        
+        // Destroy existing chart to prevent memory leaks and overlapping renders
+        if (analyticsChartInstance) {
+            analyticsChartInstance.destroy();
+        }
+        
+        const isLightTheme = document.body.classList.contains('light-theme');
+        const textColor = isLightTheme ? '#64748b' : '#94a3b8';
+        const gridColor = isLightTheme ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)';
+        
+        analyticsChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(classCounts),
+                datasets: [{
+                    label: 'Classification Frequency',
+                    data: Object.values(classCounts),
+                    backgroundColor: 'rgba(99, 102, 241, 0.6)',
+                    borderColor: 'rgba(99, 102, 241, 1)',
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: isLightTheme ? 'rgba(255, 255, 255, 0.9)' : 'rgba(15, 23, 42, 0.9)',
+                        titleColor: isLightTheme ? '#0f172a' : '#f8fafc',
+                        bodyColor: isLightTheme ? '#475569' : '#cbd5e1',
+                        borderColor: isLightTheme ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        titleFont: { size: 14, family: "'Inter', sans-serif" },
+                        bodyFont: { size: 13, family: "'Inter', sans-serif" }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0,
+                            color: textColor,
+                            font: { family: "'Inter', sans-serif" }
+                        },
+                        grid: {
+                            color: gridColor,
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: textColor,
+                            font: { family: "'Inter', sans-serif", size: 13 }
+                        },
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     // -- Preferences Logic --
     const themeToggle = document.getElementById('theme-toggle');

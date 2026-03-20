@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -18,6 +19,7 @@
             </div>
             <nav class="nav-menu">
                 <a href="#" class="nav-btn active" data-target="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="#" class="nav-btn" data-target="analytics"><i class="fa-solid fa-chart-pie"></i> Analytics</a>
                 <a href="#" class="nav-btn" data-target="history"><i class="fa-solid fa-history"></i> History</a>
                 <a href="#" class="nav-btn" data-target="settings"><i class="fa-solid fa-cog"></i> Settings</a>
             </nav>
@@ -136,6 +138,44 @@
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics View -->
+            <div id="view-analytics" class="view-section hidden">
+                <div class="analytics-grid">
+                    <!-- Summary Stats -->
+                    <div class="stats-cards">
+                        <div class="glass-card stat-card">
+                            <div class="stat-icon purple"><i class="fa-solid fa-image"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-label">Total Analyzed</span>
+                                <h3 id="stat-total">0</h3>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-card">
+                            <div class="stat-icon blue"><i class="fa-solid fa-bullseye"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-label">Avg. Accuracy</span>
+                                <h3 id="stat-accuracy">0%</h3>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-card">
+                            <div class="stat-icon green"><i class="fa-solid fa-check-circle"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-label">Real Images</span>
+                                <h3 id="stat-real">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chart -->
+                    <div class="glass-card chart-container">
+                        <h3><i class="fa-solid fa-chart-simple"></i> Classifications Breakdown</h3>
+                        <div style="position: relative; height: 350px; width: 100%; margin-top: 20px;">
+                            <canvas id="predictionsChart"></canvas>
                         </div>
                     </div>
                 </div>

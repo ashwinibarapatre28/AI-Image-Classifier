@@ -91,11 +91,11 @@ def analyze_image(image_bytes):
         elif has_exif:
             authenticity = "Real Image"
         elif sharpness > 1500 or (noise < 20 and edge_density < 0.02):
-            authenticity = "AI Generated"
+            authenticity = "Downloaded Image"
         elif noise > 50 and edge_density > 0.05:
             authenticity = "Real Image"
         else:
-            authenticity = "Downloaded Image"
+            authenticity = "AI Generated"
 
         # Count identical objects
         obj_counts = Counter(detected_objects)
