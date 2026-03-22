@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const historyContainer = document.getElementById('history-container');
     const noHistoryMsg = document.getElementById('no-history-msg');
     const clearHistoryBtn = document.getElementById('btn-clear-history');
+    const exportHistoryBtn = document.getElementById('btn-export-history');
 
     // -- State Management --
     let currentHistory = JSON.parse(localStorage.getItem('visionAI_history')) || [];
@@ -141,13 +142,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('res-quality').textContent = data.quality !== undefined ? data.quality : '--';
         document.getElementById('res-background').textContent = data.background || '--';
         
-
+        const resResolution = document.getElementById('res-resolution');
+        if (resResolution) resResolution.textContent = data.resolution || '--';
 
         document.getElementById('res-description').textContent = data.description || '--';
         document.getElementById('res-objects').textContent = data.detected_objects || '--';
         document.getElementById('res-sharpness').textContent = data.sharpness !== undefined ? data.sharpness : '--';
 
-
+        if (data.annotated_image) {
+            imagePreview.src = data.annotated_image;
+        }
 
         resultsSection.classList.remove('hidden');
         resultsSection.classList.add('fade-in');
@@ -221,6 +225,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderAnalytics();
             }
         }
+    });
+
+    exportHistoryBtn?.addEventListener('click', () => {
+        if (currentHistory.length === 0) {
+            alert("No history to export.");
+            return;
+        }
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentHistory, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "visionAI_history.json");
+        document.body.appendChild(downloadAnchorNode); 
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
     });
 
     // -- Analytics Chart Logic --

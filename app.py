@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 from ultralytics import YOLO
 from collections import Counter
+import base64
 
 app = Flask(__name__)
 
@@ -21,6 +22,14 @@ def analyze_image(image_bytes):
         
         # Run YOLO inference
         results = model(img)
+        
+        # Get the original image without bounding boxes
+        _, buffer = cv2.imencode('.jpg', img)
+        annotated_image_base64 = base64.b64encode(buffer).decode('utf-8')
+        
+        # Get image resolution
+        height, width, _ = img.shape
+        resolution = f"{width} x {height}"
         
         detected_objects = []
         confidences = []
@@ -119,7 +128,9 @@ def analyze_image(image_bytes):
             "accuracy": round(accuracy, 2),
             "quality": round(quality, 2),
             "sharpness": round(sharpness, 2),
-            "background": background
+            "background": background,
+            "resolution": resolution,
+            "annotated_image": f"data:image/jpeg;base64,{annotated_image_base64}"
         }
     except Exception as e:
         return {"error": str(e)}
