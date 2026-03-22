@@ -128,35 +128,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('res-quality').textContent = data.quality !== undefined ? data.quality : '--';
         document.getElementById('res-background').textContent = data.background || '--';
         
-        const authenticityBadge = document.getElementById('res-authenticity');
-        authenticityBadge.textContent = data.authenticity || '--';
-        
-        if (data.authenticity === 'Real Image') {
-            authenticityBadge.style.background = 'rgba(16, 185, 129, 0.15)';
-            authenticityBadge.style.color = 'var(--green)';
-            authenticityBadge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-        } else if (data.authenticity === 'AI Generated') {
-            authenticityBadge.style.background = 'rgba(59, 130, 246, 0.15)';
-            authenticityBadge.style.color = 'var(--blue)';
-            authenticityBadge.style.borderColor = 'rgba(59, 130, 246, 0.3)';
-        } else {
-            authenticityBadge.style.background = 'rgba(168, 85, 247, 0.15)';
-            authenticityBadge.style.color = 'var(--purple)';
-            authenticityBadge.style.borderColor = 'rgba(168, 85, 247, 0.3)';
-        }
+
 
         document.getElementById('res-description').textContent = data.description || '--';
         document.getElementById('res-objects').textContent = data.detected_objects || '--';
         document.getElementById('res-sharpness').textContent = data.sharpness !== undefined ? data.sharpness : '--';
 
-        const genderSection = document.getElementById('gender-section');
-        if (data.gender) {
-            genderSection.classList.remove('hidden');
-            document.getElementById('res-male-count').textContent = data.gender.male;
-            document.getElementById('res-female-count').textContent = data.gender.female;
-        } else {
-            genderSection.classList.add('hidden');
-        }
+
 
         resultsSection.classList.remove('hidden');
         resultsSection.classList.add('fade-in');
@@ -178,8 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
             date: new Date().toLocaleString(),
             image: dataUrl,
             prediction: data.prediction,
-            accuracy: data.accuracy,
-            authenticity: data.authenticity
+            accuracy: data.accuracy
         };
         currentHistory.unshift(item); // Add to sequence front
         
@@ -209,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="history-content">
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <h4 style="font-size: 18px;">${item.prediction}</h4>
-                        <span class="badge" style="font-size: 10px;">${item.authenticity}</span>
                     </div>
                     <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 8px;"><i class="fa-regular fa-clock"></i> ${item.date}</p>
                     <p style="font-size: 14px; color: var(--blue);"><i class="fa-solid fa-bullseye"></i> Accuracy: ${item.accuracy}%</p>
@@ -250,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const sumAcc = currentHistory.reduce((acc, item) => acc + parseFloat(item.accuracy), 0);
             avgAccuracy = (sumAcc / total).toFixed(1);
             
-            realCount = currentHistory.filter(item => item.authenticity === 'Real Image').length;
+
             
             currentHistory.forEach(item => {
                 const pred = item.prediction;
@@ -260,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         document.getElementById('stat-accuracy').textContent = avgAccuracy + '%';
-        document.getElementById('stat-real').textContent = realCount;
         
         // Render Chart
         const ctx = document.getElementById('predictionsChart').getContext('2d');

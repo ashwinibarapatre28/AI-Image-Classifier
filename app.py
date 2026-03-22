@@ -52,62 +52,12 @@ def analyze_image(image_bytes):
         else:
             background = "Mixed Background"
 
-        # Authenticity / Real vs AI vs Downloaded
-        edges = cv2.Canny(gray, 100, 200)
-        edge_density = np.sum(edges > 0) / (edges.shape[0] * edges.shape[1])
-        noise = contrast  # standard deviation of grayscale used as noise approximation
-        
-        # Check for EXIF data as a strong indicator of a real camera image
-        has_exif = False
-        is_gemini_ai = False
-        try:
-            import io
-            from PIL import Image
-            pil_img = Image.open(io.BytesIO(image_bytes))
-            
-            exif_data = pil_img.getexif()
-            if exif_data:
-                for tag, value in exif_data.items():
-                    if "google" in str(value).lower() or "gemini" in str(value).lower():
-                        is_gemini_ai = True
-                has_exif = True
-        except Exception:
-            pass
 
-        # Heuristic to detect a logo/watermark at the bottom corners 
-        h, w = gray.shape
-        if h > 100 and w > 100:
-            corner_h, corner_w = max(40, int(h * 0.08)), max(40, int(w * 0.08))
-            br_corner = gray[h-corner_h:h, w-corner_w:w]
-            bl_corner = gray[h-corner_h:h, 0:corner_w]
-            
-            # Logos usually introduce high local variance (edges) in the corner
-            if br_corner.std() > 45 or bl_corner.std() > 45:
-                # Considered a bottom logo/watermark
-                is_gemini_ai = True
-
-        if is_gemini_ai:
-            authenticity = "AI Generated"
-        elif has_exif:
-            authenticity = "Real Image"
-        elif sharpness > 1500 or (noise < 20 and edge_density < 0.02):
-            authenticity = "Downloaded Image"
-        elif noise > 50 and edge_density > 0.05:
-            authenticity = "Real Image"
-        else:
-            authenticity = "AI Generated"
 
         # Count identical objects
         obj_counts = Counter(detected_objects)
         person_count = obj_counts.get("person", 0)
-        
-        # Gender Detection
-        gender = None
-        if person_count > 0:
-            male_count = person_count // 2
-            female_count = person_count - male_count
-            gender = {"male": male_count, "female": female_count}
-        
+    
         prediction = "Uncategorized"
         description = "This image contains various objects, but does not fit our specific categories."
         
@@ -143,6 +93,11 @@ def analyze_image(image_bytes):
                 prediction = "Urban Scene"
                 description = "The image appears to show a city or street environment."
                 
+            # Animal/Pet Photo
+            elif obj_counts.get("dog", 0) >= 1 or obj_counts.get("cat", 0) >= 1:
+                prediction = "Animal Photo"
+                description = "The image features an animal, such as a dog or a cat."
+
             # Nature Scene: "tree" and "grass" dominate
             elif tree_count >= 1 or grass_count >= 1 or obj_counts.get("bird") or obj_counts.get("cow") or obj_counts.get("sheep"):
                 prediction = "Nature Scene"
@@ -164,9 +119,7 @@ def analyze_image(image_bytes):
             "accuracy": round(accuracy, 2),
             "quality": round(quality, 2),
             "sharpness": round(sharpness, 2),
-            "background": background,
-            "authenticity": authenticity,
-            "gender": gender
+            "background": background
         }
     except Exception as e:
         return {"error": str(e)}
