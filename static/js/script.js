@@ -105,16 +105,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (data.error) {
-                alert("Error: " + data.error);
+                if (prefs.errorAlerts !== false) {
+                    alert("Error: " + data.error);
+                }
                 resetApp(); return;
             }
 
             updateUI(data);
             saveToHistory(data, dataUrl);
 
+            // Optional: User requested Notification preferences
+            if (prefs.soundNotifications) {
+                const audio = new Audio('https://upload.wikimedia.org/wikipedia/commons/e/ec/Chime-sound.mp3');
+                audio.play().catch(e => console.log('Audio disabled by browser.', e));
+            }
+            if (prefs.successAlerts) {
+                setTimeout(() => alert("Analysis complete successfully!"), 50);
+            }
+
         } catch (error) {
             console.error(error);
-            alert("An error occurred during analysis.");
+            if (prefs.errorAlerts !== false) {
+                alert("An error occurred during analysis.");
+            }
             resetApp();
         } finally {
             loader.classList.add('hidden');
@@ -313,29 +326,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // -- Preferences Logic --
     const themeToggle = document.getElementById('theme-toggle');
     const animationToggle = document.getElementById('animation-toggle');
+    const successAlertToggle = document.getElementById('success-alert-toggle');
+    const errorAlertToggle = document.getElementById('error-alert-toggle');
+    const soundToggle = document.getElementById('sound-toggle');
+    let defaultPrefs = { lightTheme: false, animations: true, successAlerts: true, errorAlerts: true, soundNotifications: false };
+    let prefs = Object.assign(defaultPrefs, JSON.parse(localStorage.getItem('visionAI_prefs')) || {});
     
-    let prefs = JSON.parse(localStorage.getItem('visionAI_prefs')) || { lightTheme: false, animations: true };
-    
+    // Set UI state based on prefs
     if(prefs.lightTheme) {
         document.body.classList.add('light-theme');
-        themeToggle.checked = true;
+        if(themeToggle) themeToggle.checked = true;
     }
     if(!prefs.animations) {
         document.body.classList.add('no-animations');
-        animationToggle.checked = false;
+        if(animationToggle) animationToggle.checked = false;
     }
+    if(successAlertToggle) successAlertToggle.checked = prefs.successAlerts;
+    if(errorAlertToggle) errorAlertToggle.checked = prefs.errorAlerts;
+    if(soundToggle) soundToggle.checked = prefs.soundNotifications;
 
-    themeToggle.addEventListener('change', (e) => {
+    themeToggle?.addEventListener('change', (e) => {
         prefs.lightTheme = e.target.checked;
         if(prefs.lightTheme) document.body.classList.add('light-theme');
         else document.body.classList.remove('light-theme');
         localStorage.setItem('visionAI_prefs', JSON.stringify(prefs));
     });
 
-    animationToggle.addEventListener('change', (e) => {
+    animationToggle?.addEventListener('change', (e) => {
         prefs.animations = e.target.checked;
         if(!prefs.animations) document.body.classList.add('no-animations');
         else document.body.classList.remove('no-animations');
+        localStorage.setItem('visionAI_prefs', JSON.stringify(prefs));
+    });
+
+    successAlertToggle?.addEventListener('change', (e) => {
+        prefs.successAlerts = e.target.checked;
+        localStorage.setItem('visionAI_prefs', JSON.stringify(prefs));
+    });
+
+    errorAlertToggle?.addEventListener('change', (e) => {
+        prefs.errorAlerts = e.target.checked;
+        localStorage.setItem('visionAI_prefs', JSON.stringify(prefs));
+    });
+
+    soundToggle?.addEventListener('change', (e) => {
+        prefs.soundNotifications = e.target.checked;
         localStorage.setItem('visionAI_prefs', JSON.stringify(prefs));
     });
 });
