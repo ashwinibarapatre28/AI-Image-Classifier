@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -190,7 +192,7 @@
                     <div class="setting-row">
                         <div class="setting-info">
                             <h4>Export History Data</h4>
-                            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Download your analysis history as a JSON file.</p>
+                            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Download your analysis history as a PDF file.</p>
                         </div>
                         <button id="btn-export-history" class="gradient-btn" style="width: auto;"><i class="fa-solid fa-download"></i> Export Data</button>
                     </div>

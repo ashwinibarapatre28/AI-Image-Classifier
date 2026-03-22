@@ -232,13 +232,41 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("No history to export.");
             return;
         }
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentHistory, null, 2));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "visionAI_history.json");
-        document.body.appendChild(downloadAnchorNode); 
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
+        
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text("VisionAI - Analysis History", 14, 22);
+            doc.setFontSize(11);
+            doc.setTextColor(100);
+            doc.text(`Exported on ${new Date().toLocaleString()}`, 14, 30);
+            
+            const tableColumn = ["Date", "Prediction", "Accuracy (%)"];
+            const tableRows = [];
+            
+            currentHistory.forEach(item => {
+                tableRows.push([
+                    item.date,
+                    item.prediction,
+                    item.accuracy
+                ]);
+            });
+            
+            doc.autoTable({
+                head: [tableColumn],
+                body: tableRows,
+                startY: 38,
+                theme: 'striped',
+                headStyles: { fillColor: [99, 102, 241] }
+            });
+            
+            doc.save('visionAI_history.pdf');
+        } catch (e) {
+            console.error("PDF generation failed", e);
+            alert("Failed to generate PDF. Make sure jsPDF is loaded.");
+        }
     });
 
     // -- Analytics Chart Logic --
