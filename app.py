@@ -4,6 +4,7 @@ import numpy as np
 from ultralytics import YOLO
 from collections import Counter
 import base64
+from svm_classifier import predict_authenticity
 
 app = Flask(__name__)
 
@@ -61,13 +62,8 @@ def analyze_image(image_bytes):
         else:
             background = "Mixed Background"
 
-        # Authenticity Detection (Heuristic based on Sharpness & Quality)
-        if sharpness > 1000:
-            authenticity = "AI Generated"
-        elif sharpness < 150:
-            authenticity = "Real Image"
-        else:
-            authenticity = "Download Image"
+        # Authenticity Detection (using SVM model from separate file)
+        authenticity = predict_authenticity(sharpness, contrast, brightness)
 
         # Count identical objects
         obj_counts = Counter(detected_objects)

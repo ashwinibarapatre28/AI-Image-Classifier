@@ -4,3 +4,4 @@ opencv-python-headless
 pillow>=10.2.0
 numpy
 gunicorn
+scikit-learn
