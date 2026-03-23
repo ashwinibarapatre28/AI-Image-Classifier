@@ -152,6 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('res-objects').textContent = data.detected_objects || '--';
         document.getElementById('res-sharpness').textContent = data.sharpness !== undefined ? data.sharpness : '--';
 
+        const personsMetric = document.getElementById('total-persons-metric');
+        if (data.total_persons !== undefined && data.total_persons > 0) {
+            if (personsMetric) personsMetric.style.display = 'flex';
+            const resPersons = document.getElementById('res-persons');
+            if (resPersons) resPersons.textContent = data.total_persons;
+        } else {
+            if (personsMetric) personsMetric.style.display = 'none';
+        }
+
         if (data.annotated_image) {
             imagePreview.src = data.annotated_image;
         }
@@ -167,6 +176,9 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsSection.classList.add('hidden');
         loader.classList.add('hidden');
         fileInput.value = '';
+        
+        const personsMetric = document.getElementById('total-persons-metric');
+        if (personsMetric) personsMetric.style.display = 'none';
     }
 
     // -- History Data Logic --

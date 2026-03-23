@@ -131,6 +131,7 @@ def analyze_image(image_bytes):
             "prediction": prediction,
             "description": description,
             "detected_objects": detected_str,
+            "total_persons": person_count,
             "accuracy": round(accuracy, 2),
             "quality": round(quality, 2),
             "sharpness": round(sharpness, 2),
