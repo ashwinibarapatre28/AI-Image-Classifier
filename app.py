@@ -61,7 +61,13 @@ def analyze_image(image_bytes):
         else:
             background = "Mixed Background"
 
-
+        # Authenticity Detection (Heuristic based on Sharpness & Quality)
+        if sharpness > 1000:
+            authenticity = "AI Generated"
+        elif sharpness < 150:
+            authenticity = "Real Image"
+        else:
+            authenticity = "Download Image"
 
         # Count identical objects
         obj_counts = Counter(detected_objects)
@@ -129,6 +135,7 @@ def analyze_image(image_bytes):
             "quality": round(quality, 2),
             "sharpness": round(sharpness, 2),
             "background": background,
+            "authenticity": authenticity,
             "resolution": resolution,
             "annotated_image": f"data:image/jpeg;base64,{annotated_image_base64}"
         }

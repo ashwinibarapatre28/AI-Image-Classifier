@@ -145,6 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const resResolution = document.getElementById('res-resolution');
         if (resResolution) resResolution.textContent = data.resolution || '--';
 
+        const resAuthenticity = document.getElementById('res-authenticity');
+        if (resAuthenticity) resAuthenticity.textContent = data.authenticity || '--';
+
         document.getElementById('res-description').textContent = data.description || '--';
         document.getElementById('res-objects').textContent = data.detected_objects || '--';
         document.getElementById('res-sharpness').textContent = data.sharpness !== undefined ? data.sharpness : '--';
