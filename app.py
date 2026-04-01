@@ -92,7 +92,7 @@ def analyze_image(image_bytes):
             # Group Photo: Many "person" objects
             if person_count >= 3 and building_count == 0:
                 prediction = "Group Photo"
-                description = "The image appears to contain several people standing together, possibly during an event or gathering."
+                description = "The image appears to contain several people sitting together, possibly during an event or gathering."
                 
             # People near a building: "person" and "building" are detected
             elif person_count >= 1 and building_count >= 1:
