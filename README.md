@@ -39,12 +39,12 @@ Model : SVM , Naive Bayes
 
 **📷 How It Works**
 
-User uploads an image
-Image is preprocessed
-Model analyzes the image
-Output is displayed as:
-Real Image
-AI-Generated Image
+- User uploads an image
+- Image is preprocessed
+- Model analyzes the image
+- Output is displayed as:
+  - Real Image
+  - AI-Generated Image
 
 **Conclusion**
 
