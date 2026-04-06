@@ -30,6 +30,7 @@ OpenCV
 NumPy
 Model : SVM , Naive Bayes
 
+
 **🚀 Features**
 
 - Upload image and classify
